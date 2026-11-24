@@ -1,0 +1,11 @@
+[package]
+name = "susurro-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+serde.workspace = true
+anyhow.workspace = true
+rusqlite.workspace = true
+regex = "1"
