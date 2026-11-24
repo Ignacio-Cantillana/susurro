@@ -1,0 +1,20 @@
+[workspace]
+resolver = "3"
+members = ["src-tauri", "crates/susurro-core", "crates/susurro-mcp"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+
+[workspace.dependencies]
+susurro-core = { path = "crates/susurro-core" }
+serde = { version = "1", features = ["derive"] }
+anyhow = "1"
+rusqlite = { version = "0.43", features = ["bundled"] }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = 3
+strip = true
