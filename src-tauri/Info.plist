@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>NSMicrophoneUsageDescription</key>
+  <string>Susurro usa el micrófono para transcribir lo que dictas. El audio se procesa en tu Mac.</string>
+  <key>NSAudioCaptureUsageDescription</key>
+  <string>Susurro graba el audio del sistema para transcribir tus reuniones.</string>
+</dict>
+</plist>

@@ -1,0 +1,47 @@
+[package]
+name = "susurro"
+version.workspace = true
+description = "Dictado por voz y transcripción de reuniones, en local"
+authors = ["Ignacio Cantillana"]
+edition.workspace = true
+license.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "susurro_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["image-png", "macos-private-api", "tray-icon"] }
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+susurro-core = { version = "0.1.0", path = "../crates/susurro-core" }
+cpal = "0.18"
+core-graphics = "0.25"
+core-foundation = "0.10"
+arboard = "3"
+tauri-nspanel = "2.1"
+objc2-app-kit = "0.3"
+objc2-foundation = "0.3.2"
+objc2 = "0.6.5"
+parking_lot = "0.13.0"
+log = "0.4.35"
+reqwest = { version = "0.13", features = ["multipart", "json", "stream", "blocking"] }
+anyhow.workspace = true
+whisper-rs = { version = "0.16", features = ["metal"] }
+security-framework = "3.7.0"
+objc2-core-audio = "0.3.2"
+objc2-core-audio-types = "0.3.2"
+objc2-core-foundation = "0.3.2"
+block2 = "0.6.2"
+libc = "0.2"
+
+
