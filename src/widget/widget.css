@@ -1,0 +1,244 @@
+/* Botonera flotante. El fondo del panel es transparente: solo se ven los botones. */
+:root {
+  --bg: #0d0d0f;
+  --bg-hover: #1b1b20;
+  --line: rgba(255, 255, 255, 0.16);
+  --text: #f4f4f6;
+  --accent: #a78bfa;
+  --rec: #ff4d4f;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: var(--text);
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  background: transparent;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: default;
+}
+
+.widget {
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 4px 0 4px 8px;
+  box-sizing: border-box;
+}
+
+/* Minimizado: una pestañita pegada al borde izquierdo; al pasar el ratón se abre. */
+.widget.mini {
+  padding: 0;
+  align-items: center;
+  justify-content: flex-start;
+}
+.handle {
+  width: 5px;
+  height: 44px;
+  margin-left: 3px;
+  margin-top: -20px;
+  border-radius: 3px;
+  background: rgba(60, 60, 66, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  width: 34px;
+}
+
+.btn {
+  display: grid;
+  place-items: center;
+  position: relative;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: background 0.15s, transform 0.12s, border-color 0.15s;
+  cursor: pointer;
+  padding: 0;
+}
+/* `.hot` = ratón encima. Lo pone Widget.tsx con la posición que manda Rust, porque
+   el panel no coge el foco y WebKit no aplica `:hover` de forma fiable. */
+.btn:hover,
+.btn.hot {
+  background: #3a3a40;
+  border-color: rgba(255, 255, 255, 0.45);
+}
+.btn:active {
+  transform: scale(0.94);
+}
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.mic {
+  width: 34px;
+  height: 58px;
+  border-radius: 17px;
+}
+.mic:hover,
+.mic.hot {
+  background: #55555d;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+/* Grabando: rojo que late, para que se vea de reojo. Al soltar, encoge y pasa a la ruedita. */
+.mic.active {
+  background: var(--rec);
+  color: #fff;
+  border-color: var(--rec);
+  animation: rec-in 0.18s ease-out, rec-glow 1.2s ease-in-out 0.18s infinite;
+}
+.mic.busy {
+  background: #26262b;
+  animation: rec-out 0.22s ease-in;
+}
+
+.round {
+  width: 31px;
+  height: 31px;
+  border-radius: 50%;
+}
+.round.small.hot {
+  color: #fff;
+}
+.round.small {
+  width: 26px;
+  height: 26px;
+  color: rgba(255, 255, 255, 0.75);
+}
+.round.active {
+  background: var(--rec);
+  border-color: var(--rec);
+  color: #fff;
+  animation: rec-in 0.18s ease-out, rec-glow 1.2s ease-in-out 0.18s infinite;
+}
+.round.rec {
+  border-color: var(--rec);
+  color: var(--rec);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.rec-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+.rec-inner small {
+  font-size: 7px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.bars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 22px;
+}
+.bars span {
+  width: 3px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: height 0.08s linear;
+}
+
+.lock {
+  position: absolute;
+  bottom: 4px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: var(--text);
+  animation: spin 0.8s linear infinite;
+}
+
+.label {
+  margin-top: 14px;
+  max-width: 170px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  font-size: 13px;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  animation: fade-in 0.12s ease-out;
+}
+.label b {
+  font-weight: 700;
+  margin-left: 0.3em;
+}
+.label.toast {
+  border-radius: 14px;
+  white-space: normal;
+  font-size: 12px;
+}
+.label.toast.error {
+  border-color: rgba(255, 77, 79, 0.6);
+}
+.label.toast.ok {
+  border-color: rgba(167, 139, 250, 0.7);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes rec-in {
+  from {
+    transform: scale(0.82);
+    background: var(--bg);
+  }
+}
+@keyframes rec-glow {
+  50% {
+    box-shadow: 0 0 0 5px rgba(255, 77, 79, 0.28);
+  }
+}
+@keyframes rec-out {
+  from {
+    transform: scale(1.06);
+    background: var(--rec);
+  }
+}
+@keyframes pulse {
+  50% {
+    box-shadow: 0 0 0 5px rgba(255, 77, 79, 0.18);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
