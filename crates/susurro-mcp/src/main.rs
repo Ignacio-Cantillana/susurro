@@ -92,7 +92,8 @@ impl Susurro {
             None => db.list_meetings(1, 0).map_err(|e| e.to_string())?.first().map(|m| m.id).ok_or("No hay reuniones grabadas.")?,
         };
         let (meeting, segments) = db.get_meeting(id).map_err(|e| e.to_string())?.ok_or(format!("No existe la reunión {id}."))?;
-        let mut md = to_markdown(&meeting, &segments);
+        let dict = db.list_dictionary().map_err(|e| e.to_string())?;
+        let mut md = to_markdown(&meeting, &segments, &dict);
         md.insert_str(md.find('\n').map(|i| i + 1).unwrap_or(0), &format!("\nFecha: {}\n", fmt_ts(meeting.started_at)));
         Ok(md)
     }

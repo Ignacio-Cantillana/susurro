@@ -189,6 +189,7 @@ fn run(
     if let Err(e) = st.db.lock().finish_meeting(id, audio.as_deref()) {
         st.error(format!("no se pudo cerrar la reunión: {e:#}"));
     }
+    warn_if_echo(&st, id);
     st.emit("meeting-updated", id);
 }
 
@@ -215,6 +216,20 @@ fn transcribe_chunk(st: &AppState, meeting_id: i64, speaker: Speaker, offset_ms:
     match result.and_then(|segs| st.db.lock().add_segments(meeting_id, &segs)) {
         Ok(()) => st.emit("meeting-updated", meeting_id),
         Err(e) => st.error(format!("error transcribiendo la reunión: {e:#}")),
+    }
+}
+
+/// Si buena parte de tu pista era la voz de los demás saliendo por los altavoces,
+/// avisa: la transcripción ya lo limpia, pero con cascos sale mejor.
+fn warn_if_echo(st: &AppState, id: i64) {
+    let Ok(Some((_, segs))) = st.db.lock().get_meeting(id) else { return };
+    let ratio = susurro_core::echo::echo_ratio(&segs);
+    if ratio >= 0.3 {
+        log::info!("reunión {id}: {:.0} % de eco en el micrófono", ratio * 100.0);
+        st.emit(
+            "warning",
+            "Tu micrófono captaba la reunión por los altavoces (¿sin cascos?). Lo he limpiado, pero con cascos se transcribe mejor.",
+        );
     }
 }
 

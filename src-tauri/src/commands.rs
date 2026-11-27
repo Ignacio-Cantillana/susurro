@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use serde::Serialize;
 use susurro_core::db::{DictTerm, Entry, EntryKind, Meeting, SearchHit, Segment, Snippet};
-use susurro_core::meeting::{merge_turns, to_markdown};
+use susurro_core::meeting::{to_markdown, transcript};
 use tauri::{AppHandle, Manager, State};
 
 use crate::dictation::{self, Mode, Status};
@@ -98,14 +98,17 @@ pub fn list_meetings(st: St, limit: i64, offset: i64) -> Res<Vec<Meeting>> {
 
 #[tauri::command]
 pub fn get_meeting(st: St, id: i64) -> Res<Option<MeetingDetail>> {
-    let found = st.db.lock().get_meeting(id).map_err(err)?;
-    Ok(found.map(|(meeting, segs)| MeetingDetail { meeting, turns: merge_turns(segs) }))
+    let db = st.db.lock();
+    let dict = db.list_dictionary().map_err(err)?;
+    let found = db.get_meeting(id).map_err(err)?;
+    Ok(found.map(|(meeting, segs)| MeetingDetail { meeting, turns: transcript(segs, &dict) }))
 }
 
 #[tauri::command]
 pub fn meeting_markdown(st: St, id: i64) -> Res<String> {
-    let (m, segs) = st.db.lock().get_meeting(id).map_err(err)?.ok_or("la reunión no existe")?;
-    Ok(to_markdown(&m, &segs))
+    let db = st.db.lock();
+    let (m, segs) = db.get_meeting(id).map_err(err)?.ok_or("la reunión no existe")?;
+    Ok(to_markdown(&m, &segs, &db.list_dictionary().map_err(err)?))
 }
 
 #[tauri::command]
