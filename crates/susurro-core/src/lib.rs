@@ -3,6 +3,7 @@
 
 pub mod audio;
 pub mod db;
+pub mod echo;
 pub mod meeting;
 pub mod textproc;
 
